@@ -17,29 +17,35 @@ async function fetchData(endpoint) {
 
 function updateUI(data, elementId) {
   const element = document.getElementById(elementId);
+  if (!element) {
+    console.warn(`Element with id '${elementId}' not found.`);
+    return; // Exit if the element is not found
+  }
+  
   if (data.error) {
     element.textContent = `Error: ${data.error}`;
   } else {
-    // Update UI based on the fetched data
+    // Example of updating UI with fetched data
     if (elementId === 'next-race') {
-      // Assuming the API response structure
       const race = data.MRData.RaceTable.Races[0];
-      element.textContent = `Next Race: ${race.raceName} on ${new Date(race.date).toLocaleDateString()}`;
+      if (race) {
+        element.textContent = `Next Race: ${race.raceName} on ${race.date}`;
+      } else {
+        element.textContent = 'No upcoming race found.';
+      }
     } else if (elementId === 'last-race') {
-      // Example for last race results
-      const lastRace = data.MRData.RaceTable.Races[0];
-      element.textContent = `Last Race: ${lastRace ? lastRace.raceName : 'Error fetching data'}`;
+      const race = data.MRData.RaceTable.Races[0];
+      element.textContent = race ? 'Last Race: ' + race.raceName : 'Error fetching data';
     } else if (elementId === 'driver-standings') {
-      // Display driver standings
-      const standings = data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
-      element.innerHTML = standings.map(d => `${d.position} - ${d.Driver.givenName} ${d.Driver.familyName}`).join('<br>');
+      const standings = data.MRData.StandingsTable.StandingsLists[0]?.DriverStandings;
+      element.textContent = standings ? standings.map(d => `${d.position} - ${d.Driver.givenName} ${d.Driver.familyName}`).join(', ') : 'Error fetching driver standings.';
     } else if (elementId === 'constructor-standings') {
-      // Display constructor standings
-      const standings = data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings;
-      element.innerHTML = standings.map(c => `${c.position} - ${c.Constructor.name}`).join('<br>');
+      const standings = data.MRData.StandingsTable.StandingsLists[0]?.ConstructorStandings;
+      element.textContent = standings ? standings.map(c => `${c.position} - ${c.Constructor.name}`).join(', ') : 'Error fetching constructor standings.';
     }
   }
 }
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
