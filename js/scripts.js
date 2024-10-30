@@ -1,7 +1,6 @@
 // Set the Heroku base URL
 const baseURL = 'https://f1-web-app-b8de4dc7fd4b.herokuapp.com/api';
 
-
 // Ensure the DOM is fully loaded before attaching event listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Find the "Simulate Results" button by its ID
