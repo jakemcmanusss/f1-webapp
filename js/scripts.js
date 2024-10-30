@@ -1,5 +1,5 @@
 // Set the Heroku base URL
-const baseURL = 'https://cors-anywhere.herokuapp.com/https://f1-web-app-b8de4dc7fd4b.herokuapp.com/api';
+const baseURL = 'https://f1-web-app-b8de4dc7fd4b.herokuapp.com/api';
 
 
 // Ensure the DOM is fully loaded before attaching event listeners
