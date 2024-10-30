@@ -39,7 +39,7 @@ function updateUI(data, elementId) {
       const standings = data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings;
       element.textContent = standings.map(c => `${c.position} - ${c.Constructor.name}`).join(', ');
     }
-}
+}}
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
