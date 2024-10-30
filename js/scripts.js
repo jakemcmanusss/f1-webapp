@@ -1,22 +1,22 @@
-const localProxy = 'https://ergast.com/api/f1/';
+// Set the Heroku base URL as a placeholder
+const baseURL = 'https://your-app-name.herokuapp.com/api';
 
 // Ensure the DOM is fully loaded before attaching event listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Find the "Simulate Results" button by its ID
     const simulateButton = document.getElementById('simulate-results-btn');
-    
+
     // Check if the button exists on the page
     if (simulateButton) {
         // Add a click event listener to navigate to the /simulate route
         simulateButton.addEventListener('click', () => {
-            window.location.href = 'http://127.0.0.1:3000/simulate';
+            window.location.href = '/simulate';
         });
     } else {
-        // Output an error if the button is not found
         console.error('Button with ID simulate-results-btn not found');
     }
 
-    // Function to handle errors by displaying a message in the appropriate section
+    // Error handling function to display messages in relevant sections
     function handleError(section, message) {
         const sectionElement = document.querySelector(section + ' tbody');
         if (sectionElement) {
@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Function to fetch driver standings (top 10)
+    // Fetch driver standings (top 10)
     async function fetchDriverStandings() {
         try {
-            const response = await fetch('/api/current/driverStandings.json');
+            const response = await fetch(`${baseURL}/current/driverStandings.json`);
             if (!response.ok) throw new Error('Failed to fetch driver standings');
             const data = await response.json();
             const standings = data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
@@ -50,10 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Function to fetch constructor standings
+    // Fetch constructor standings
     async function fetchConstructorStandings() {
         try {
-            const response = await fetch('/api/current/constructorStandings.json');
+            const response = await fetch(`${baseURL}/current/constructorStandings.json`);
             if (!response.ok) throw new Error('Failed to fetch constructor standings');
             const data = await response.json();
             const standings = data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings;
@@ -75,12 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Function to fetch last race results (top 10)
+    // Fetch last race results (top 10)
     async function fetchLastRaceResults() {
         try {
-            const response = await fetch('/api/current/last/results.json');
+            const response = await fetch(`${baseURL}/current/last/results.json`);
             if (!response.ok) throw new Error('Failed to fetch last race results');
-            
+
             const data = await response.json();
             const lastRace = data.MRData.RaceTable.Races[0];
             const results = lastRace.Results;
@@ -108,10 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Function to fetch next race information and start countdown
+    // Fetch next race information and start countdown
     async function fetchNextRace() {
         try {
-            const response = await fetch('/api/current.json');
+            const response = await fetch(`${baseURL}/current.json`);
             if (!response.ok) throw new Error('Failed to fetch next race information');
 
             const data = await response.json();
@@ -121,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('.next-race h2').textContent = `Next Race: ${nextRace.raceName}`;
             document.querySelector('.next-race p').textContent = `${nextRace.Circuit.circuitName} | ${nextRace.date}`;
 
-            // Start countdown if next race is available
             if (nextRace) startCountdown(nextRace.date, nextRace.time);
         } catch (error) {
             console.error('Error fetching next race information:', error);
@@ -129,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Countdown Timer for the next race
+    // Countdown timer for the next race
     function startCountdown(raceDate, raceTime) {
         const raceDateTime = new Date(`${raceDate}T${raceTime}`);
         const countdownInterval = setInterval(() => {
@@ -154,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    // Initialization function to load all necessary data on page load
+    // Initialize by fetching data
     async function init() {
         await fetchNextRace();
         await fetchLastRaceResults();
@@ -162,6 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
         await fetchConstructorStandings();
     }
 
-    // Call init when the DOM is fully loaded
+    // Call init to load everything when the page loads
     init();
 });
