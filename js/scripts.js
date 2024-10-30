@@ -1,6 +1,7 @@
 // scripts.js
 
-const baseURL = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://f1-web-app-b8de4dc7fd4b.herokuapp.com';
+// Assuming your server is handling proxy requests for you
+const baseURL = window.location.origin;
 
 async function fetchData(endpoint) {
   const fullURL = `${baseURL}/${endpoint}`;
@@ -16,45 +17,44 @@ async function fetchData(endpoint) {
   }
 }
 
-async function displayNextRace() {
-  const data = await fetchData('api/current/next.json');
+function updateUI(data, elementId) {
+  const element = document.getElementById(elementId);
   if (data.error) {
-    document.getElementById('next-race').textContent = `Error: ${data.error}`;
+    element.textContent = `Error: ${data.error}`;
   } else {
-    // Process and display next race information
-  }
+    // Example of updating UI with fetched data
+    if (elementId === 'next-race') {
+      // Assuming the API response structure
+      const race = data.MRData.RaceTable.Races[0];
+      element.textContent = `Next Race: ${race.raceName} on ${race.date}`;
+    } else if (elementId === 'last-race') {
+      // Example for last race results
+      element.textContent = 'Last Race: ' + (data.MRData.RaceTable.Races[0] ? data.MRData.RaceTable.Races[0].raceName : 'Error fetching data');
+    } else if (elementId === 'driver-standings') {
+      // Display driver standings
+      const standings = data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
+      element.textContent = standings.map(d => `${d.position} - ${d.Driver.givenName} ${d.Driver.familyName}`).join(', ');
+    } else if (elementId === 'constructor-standings') {
+      // Display constructor standings
+      const standings = data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings;
+      element.textContent = standings.map(c => `${c.position} - ${c.Constructor.name}`).join(', ');
+    }
 }
 
-async function displayLastRace() {
-  const data = await fetchData('api/current/last/results.json');
-  if (data.error) {
-    document.getElementById('last-race').textContent = `Error: ${data.error}`;
-  } else {
-    // Process and display last race results
-  }
-}
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const nextRaceData = await fetchData('api/current/next.json');
+    updateUI(nextRaceData, 'next-race');
 
-async function displayDriverStandings() {
-  const data = await fetchData('api/current/driverStandings.json');
-  if (data.error) {
-    document.getElementById('driver-standings').textContent = `Error: ${data.error}`;
-  } else {
-    // Process and display driver standings
-  }
-}
+    const lastRaceData = await fetchData('api/current/last/results.json');
+    updateUI(lastRaceData, 'last-race');
 
-async function displayConstructorStandings() {
-  const data = await fetchData('api/current/constructorStandings.json');
-  if (data.error) {
-    document.getElementById('constructor-standings').textContent = `Error: ${data.error}`;
-  } else {
-    // Process and display constructor standings
-  }
-}
+    const driverStandingsData = await fetchData('api/current/driverStandings.json');
+    updateUI(driverStandingsData, 'driver-standings');
 
-document.addEventListener('DOMContentLoaded', () => {
-  displayNextRace();
-  displayLastRace();
-  displayDriverStandings();
-  displayConstructorStandings();
+    const constructorStandingsData = await fetchData('api/current/constructorStandings.json');
+    updateUI(constructorStandingsData, 'constructor-standings');
+  } catch (error) {
+    console.error('Error:', error);
+  }
 });
