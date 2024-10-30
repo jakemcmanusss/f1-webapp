@@ -1,0 +1,30 @@
+<!-- simulate.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulate Results - F1 Project</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src https://fonts.gstatic.com; style-src 'self' https://fonts.googleapis.com;">
+
+</head>
+<body>
+    <header class="header">
+        <div class="logo">F1 Project</div>
+    </header>
+    <section class="simulation-section">
+        <h1>Simulate F1 Results</h1>
+        <div class="driver-selection">
+            <label for="driver-select">Select Driver:</label>
+            <select id="driver-select">
+                <!-- Dynamically populated by JS -->
+            </select>
+        </div>
+        <button id="simulate-btn">Run Simulation</button>
+        <div id="simulation-results"></div>
+    </section>
+    <script src="js/scripts.js"></script>
+    <script src="js/simulation.js"></script>
+</body>
+</html>
