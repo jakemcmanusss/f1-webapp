@@ -1,7 +1,5 @@
-// scripts.js
-
-// Assuming your server is handling proxy requests for you
-const baseURL = window.location.origin;
+// Set the base URL to the Heroku server or the proxy server
+const baseURL = 'https://f1-web-app-b8de4dc7fd4b.herokuapp.com/'; // Update to your Heroku app URL
 
 async function fetchData(endpoint) {
   const fullURL = `${baseURL}/${endpoint}`;
@@ -22,24 +20,26 @@ function updateUI(data, elementId) {
   if (data.error) {
     element.textContent = `Error: ${data.error}`;
   } else {
-    // Example of updating UI with fetched data
+    // Update UI based on the fetched data
     if (elementId === 'next-race') {
       // Assuming the API response structure
       const race = data.MRData.RaceTable.Races[0];
-      element.textContent = `Next Race: ${race.raceName} on ${race.date}`;
+      element.textContent = `Next Race: ${race.raceName} on ${new Date(race.date).toLocaleDateString()}`;
     } else if (elementId === 'last-race') {
       // Example for last race results
-      element.textContent = 'Last Race: ' + (data.MRData.RaceTable.Races[0] ? data.MRData.RaceTable.Races[0].raceName : 'Error fetching data');
+      const lastRace = data.MRData.RaceTable.Races[0];
+      element.textContent = `Last Race: ${lastRace ? lastRace.raceName : 'Error fetching data'}`;
     } else if (elementId === 'driver-standings') {
       // Display driver standings
       const standings = data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
-      element.textContent = standings.map(d => `${d.position} - ${d.Driver.givenName} ${d.Driver.familyName}`).join(', ');
+      element.innerHTML = standings.map(d => `${d.position} - ${d.Driver.givenName} ${d.Driver.familyName}`).join('<br>');
     } else if (elementId === 'constructor-standings') {
       // Display constructor standings
       const standings = data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings;
-      element.textContent = standings.map(c => `${c.position} - ${c.Constructor.name}`).join(', ');
+      element.innerHTML = standings.map(c => `${c.position} - ${c.Constructor.name}`).join('<br>');
     }
-}}
+  }
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
