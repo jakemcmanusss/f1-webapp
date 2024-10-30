@@ -1,5 +1,5 @@
 // Set the base URL to the Heroku server or the proxy server
-const baseURL = 'https://f1-web-app-b8de4dc7fd4b.herokuapp.com/'; // Update to your Heroku app URL
+const baseURL = 'https://f1-web-app.herokuapp.com/api';
 
 async function fetchData(endpoint) {
   const fullURL = `${baseURL}/${endpoint}`;
@@ -17,48 +17,39 @@ async function fetchData(endpoint) {
 
 function updateUI(data, elementId) {
   const element = document.getElementById(elementId);
-  if (!element) {
-    console.warn(`Element with id '${elementId}' not found.`);
-    return; // Exit if the element is not found
-  }
-  
   if (data.error) {
     element.textContent = `Error: ${data.error}`;
   } else {
-    // Example of updating UI with fetched data
+    // Updating UI based on data
     if (elementId === 'next-race') {
       const race = data.MRData.RaceTable.Races[0];
-      if (race) {
-        element.textContent = `Next Race: ${race.raceName} on ${race.date}`;
-      } else {
-        element.textContent = 'No upcoming race found.';
-      }
+      element.textContent = `Next Race: ${race.raceName} on ${race.date}`;
     } else if (elementId === 'last-race') {
-      const race = data.MRData.RaceTable.Races[0];
-      element.textContent = race ? 'Last Race: ' + race.raceName : 'Error fetching data';
+      element.textContent = 'Last Race: ' + (data.MRData.RaceTable.Races[0] ? data.MRData.RaceTable.Races[0].raceName : 'Error fetching data');
     } else if (elementId === 'driver-standings') {
-      const standings = data.MRData.StandingsTable.StandingsLists[0]?.DriverStandings;
-      element.textContent = standings ? standings.map(d => `${d.position} - ${d.Driver.givenName} ${d.Driver.familyName}`).join(', ') : 'Error fetching driver standings.';
+      const standings = data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
+      element.textContent = standings.map(d => `${d.position} - ${d.Driver.givenName} ${d.Driver.familyName}`).join(', ');
     } else if (elementId === 'constructor-standings') {
-      const standings = data.MRData.StandingsTable.StandingsLists[0]?.ConstructorStandings;
-      element.textContent = standings ? standings.map(c => `${c.position} - ${c.Constructor.name}`).join(', ') : 'Error fetching constructor standings.';
+      const standings = data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings;
+      element.textContent = standings.map(c => `${c.position} - ${c.Constructor.name}`).join(', ');
     }
   }
 }
 
 
+
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const nextRaceData = await fetchData('api/current/next.json');
+    const nextRaceData = await fetchData('current/next.json');
     updateUI(nextRaceData, 'next-race');
 
-    const lastRaceData = await fetchData('api/current/last/results.json');
+    const lastRaceData = await fetchData('current/last/results.json');
     updateUI(lastRaceData, 'last-race');
 
-    const driverStandingsData = await fetchData('api/current/driverStandings.json');
+    const driverStandingsData = await fetchData('current/driverStandings.json');
     updateUI(driverStandingsData, 'driver-standings');
 
-    const constructorStandingsData = await fetchData('api/current/constructorStandings.json');
+    const constructorStandingsData = await fetchData('current/constructorStandings.json');
     updateUI(constructorStandingsData, 'constructor-standings');
   } catch (error) {
     console.error('Error:', error);
